@@ -28,12 +28,10 @@ public abstract class AdventDay3 {
         int stepsCurrent = 0;
         for (Pair c : crosspoints) {
             stepsCurrent = calculateSteps(wire1, c);
-            //System.out.println("Wire1 steps: " + stepsCurrent);
             stepsCurrent = stepsCurrent + calculateSteps(wire2, c);
-            //System.out.println("Total steps: " + stepsCurrent);
             if (stepsCurrent < stepsShortest) stepsShortest = stepsCurrent;
         }
-        System.out.println("Total steps: " + stepsShortest);
+        System.out.println("Fastest path to a crosspoint: " + stepsShortest);
 
     }
 
@@ -44,8 +42,6 @@ public abstract class AdventDay3 {
             wire1 = line1.split(",");
             String line2 = input.nextLine();
             wire2 = line2.split(",");
-            //System.out.println(wire1.length + " - " + wire1[wire1.length-1]);
-            //System.out.println(wire2.length + " - " + wire2[wire2.length-1]);
         }
         catch (FileNotFoundException e) {
             System.out.println("File not found");
@@ -123,16 +119,12 @@ public abstract class AdventDay3 {
 
         for (Coordinates hLine : horizontalWire2) {
             for (Coordinates vLine : verticalWire1) {
-
-                //for vertical lines xStart and xEnd are the same
-                //for horizontal lines yStart and yEnd are the same
                 if ((vLine.xStart >= hLine.xStart) &&
                         (vLine.xEnd <= hLine.xEnd) &&
                         (vLine.yStart <= hLine.yStart) &&
                         (vLine.yEnd >= hLine.yEnd)) {
                     if ((vLine.xStart != 0) || (hLine.yStart != 0))
                         crosspoints.add(new Pair(vLine.xStart, hLine.yStart));
-                    //x from vertical, y from horizontal as they are constant
                 }
             }
         }
@@ -164,19 +156,15 @@ public abstract class AdventDay3 {
         int crossX = (Integer) cross.getKey();
         int crossY = (Integer) cross.getValue();
 
-        //System.out.println("crossX: " + crossX + " crossY: " + crossY);
         for (int i = 0; i < wireMoves.length; i++) {
             direction = wireMoves[i].substring(0, 1);
             distance = Integer.parseInt(wireMoves[i].substring(1));
 
-            //calculate coordinates - we want lower x or y to be xStart or yStart
             if (direction.equals("R")) {
                 for (int x = 0; x < distance; x++) {
                     currentX += 1;
                     steps += 1;
-                    //System.out.println(x + " Move " + wireMoves[i] + " step " + steps + " CurrentX: " + currentX + " CurrentY: " + currentY);
                     if ((currentX == crossX) && (currentY == crossY)) {
-                        //System.out.println("CrossX: " + crossX + " CrossY: " + crossY + " CurrentX: " + currentX + " CurrentY: " + currentY);
                         return steps;
                     }
 
@@ -186,9 +174,7 @@ public abstract class AdventDay3 {
                 for (int x = 0; x < distance; x++) {
                     currentX -= 1;
                     steps += 1;
-                    //System.out.println(x + " Move " + wireMoves[i] + " step " + steps + " CurrentX: " + currentX + " CurrentY: " + currentY);
                     if ((currentX == crossX) && (currentY == crossY)) {
-                        //System.out.println("CrossX: " + crossX + " CrossY: " + crossY + " CurrentX: " + currentX + " CurrentY: " + currentY);
                         return steps;
                     }
                 }
@@ -197,9 +183,7 @@ public abstract class AdventDay3 {
                 for (int y = 0; y < distance; y++) {
                     currentY += 1;
                     steps += 1;
-                    //System.out.println(y + " Move " + wireMoves[i] + " step " + steps + " CurrentX: " + currentX + " CurrentY: " + currentY);
                     if ((currentX == crossX) && (currentY == crossY)) {
-                        //System.out.println("CrossX: " + crossX + " CrossY: " + crossY + " CurrentX: " + currentX + " CurrentY: " + currentY);
                         return steps;
                     }
                 }
@@ -208,45 +192,13 @@ public abstract class AdventDay3 {
                 for (int y = 0; y < distance; y++) {
                     currentY -= 1;
                     steps += 1;
-                    //System.out.println(y + " Move " + wireMoves[i] + " step " + steps + " CurrentX: " + currentX + " CurrentY: " + currentY);
                     if ((currentX == crossX) && (currentY == crossY)) {
-                        //System.out.println("CrossX: " + crossX + " CrossY: " + crossY + " CurrentX: " + currentX + " CurrentY: " + currentY);
                         return steps;
                     }
                 }
             }
         }
         return steps;
-    }
-
-    public static void showHorizontals() {
-        System.out.println("Showing horizontal lines wire1: ");
-        for (Coordinates cH: horizontalWire1)
-            System.out.println("[" + cH.xStart + "," + cH.yStart + "]" +
-                    "[" + cH.xEnd + "," + cH.yEnd + "]");
-        System.out.println("Showing horizontal lines wire2: ");
-        for (Coordinates cH: horizontalWire2)
-            System.out.println("[" + cH.xStart + "," + cH.yStart + "]" +
-                    "[" + cH.xEnd + "," + cH.yEnd + "]");
-    }
-
-    public static void showVerticals() {
-        System.out.println("Showing vertical lines wire1: ");
-        for (Coordinates cH: verticalWire1)
-            System.out.println("[" + cH.xStart + "," + cH.yStart + "]" +
-                    "[" + cH.xEnd + "," + cH.yEnd + "]");
-        System.out.println("Showing vertical lines wire2: ");
-        for (Coordinates cH: verticalWire2)
-            System.out.println("[" + cH.xStart + "," + cH.yStart + "]" +
-                    "[" + cH.xEnd + "," + cH.yEnd + "]");
-
-    }
-
-    public static void showCrosspoints() {
-        System.out.println("Showing crosspoints: " + crosspoints.size());
-        for (Pair c : crosspoints) {
-            System.out.println("[" + c.getKey() + "," + c.getValue() + "]");
-        }
     }
 
     public static class Coordinates {
