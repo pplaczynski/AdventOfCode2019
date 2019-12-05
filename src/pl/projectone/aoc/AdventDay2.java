@@ -15,6 +15,34 @@ public abstract class AdventDay2 {
         readDirections(file);
         ArrayList<Integer> finalCodes = calculateCodes(codes);
         System.out.println(finalCodes);
+        System.out.println(task2(file, 19690720));
+    }
+
+    private static int task2(String file, int searched) {
+
+        ArrayList<Integer> tempCodes = new ArrayList<>();
+        int v1;
+        int v2;
+        int value;
+        int result = 0;
+
+
+        for (v1 = 0; v1 < 100; v1++) {
+            for (v2 = 0; v2 < 100; v2++) {
+                codes.clear();
+                readDirections(file);
+                tempCodes = codes;
+                tempCodes.set(1, v1);
+                tempCodes.set(2, v2);
+                value = calculateCodes(tempCodes).get(0);
+                if (value == searched) {
+                    result = 100 * v1 + v2;
+                    break;
+                }
+            }
+            if (result > 0) break;
+        }
+        return result;
     }
 
     private static void readDirections(String file) {
@@ -40,7 +68,7 @@ public abstract class AdventDay2 {
 
             if (startingCodes.get(i) == 1) {
                 if (startingCodes.get(i+1) >= startingCodes.size() || startingCodes.get(i+2) >= startingCodes.size()) {
-                    System.out.println("Range out of bounds..., ending program");
+                    //System.out.println("Range out of bounds..., ending program");
                     System.exit(0);
                 }
                 else {
@@ -68,14 +96,16 @@ public abstract class AdventDay2 {
             }
 
             else if (startingCodes.get(i) == 99) {
-                System.out.println("Code 99, ending program...");
-                System.out.println(startingCodes.toString());
-                System.exit(0);
+                //System.out.println("Code 99, ending program...");
+                //System.out.println(startingCodes.toString());
+                return startingCodes;
+                //System.exit(0);
             }
             else {
-                System.out.println("Unknown code " + startingCodes.get(i) + ", ending program...");
+                //System.out.println("Unknown code " + startingCodes.get(i) + ", ending program...");
                 //System.out.println(startingCodes.toString());
-                System.exit(0);
+                //System.exit(0);
+                return startingCodes;
             }
         }
         return startingCodes;
