@@ -23,7 +23,6 @@ public abstract class AdventDay5 {
             int[] params = interpreter(calculatedCodes.get(position));
             position = runInstruction(params, position, input);
         }
-
     }
 
     private static void readDirections(String file) {
@@ -77,22 +76,15 @@ public abstract class AdventDay5 {
             }
         }
 
+        if (params[0] != 0) System.out.println("Error: Param 1 = " + params[0]);
+
         if (params[4] == 1) {
             pos = position + 4;
-
-
-            if (params[0] == 0) calculatedCodes.set(calculatedCodes.get(position + 3), a + b);
-            else {
-                System.out.println("Error: Param 1 = " + params[0]);
-            }
+            calculatedCodes.set(calculatedCodes.get(position + 3), a + b);
         }
         else if (params[4] == 2) {
             pos = position + 4;
-
-            if (params[0] == 0) calculatedCodes.set(calculatedCodes.get(position + 3), a * b);
-            else {
-                System.out.println("Error: Param 1 = " + params[0]);
-            }
+            calculatedCodes.set(calculatedCodes.get(position + 3), a * b);
         }
         else if (params[4] == 3) {
             calculatedCodes.set(calculatedCodes.get(position+1), input);
@@ -102,51 +94,27 @@ public abstract class AdventDay5 {
             pos = position + 2;
             System.out.println(a);
             outputCodes.add(a);
-            /**
-            if (params[2] == 0) {
-                System.out.println(calculatedCodes.get(calculatedCodes.get(position + 1)));
-                outputCodes.add(calculatedCodes.get(calculatedCodes.get(position + 1)));
-            }
-            else if (params[2] == 1) {
-                System.out.println(calculatedCodes.get(position + 1));
-                outputCodes.add(calculatedCodes.get(position + 1));
-            }
-            else System.out.println("Error Param 1 = " + params[2]);
-
-             */
         }
         else if (params[4] == 5) {
-
             if (a != 0) pos = b;
             else pos = position + 3;
-
         }
         else if (params[4] == 6) {
-
             if (a == 0) pos = b;
             else pos = position + 3;
         }
         else if (params[4] == 7) {
             pos = position + 4;
-
             int result = 0;
             if (a < b) result = 1;
-
-            if (params[0] == 0) calculatedCodes.set(calculatedCodes.get(position + 3), result);
-            else {
-                System.out.println("Error: Param 1 = " + params[0]);
-            }
+            calculatedCodes.set(calculatedCodes.get(position + 3), result);
         }
         else if (params[4] == 8) {
             pos = position + 4;
 
             int result = 0;
             if (a == b) result = 1;
-            if (params[0] == 0) calculatedCodes.set(calculatedCodes.get(position + 3), result);
-            else {
-                System.out.println("Error: Param 1 = " + params[0]);
-            }
-
+            calculatedCodes.set(calculatedCodes.get(position + 3), result);
         }
         else if ((params[4] == 9) && (params[3] == 9)) {
             System.out.println("Code 99 at position: " + pos + " terminating program...");
@@ -158,5 +126,4 @@ public abstract class AdventDay5 {
         }
         return pos;
     }
-
 }
