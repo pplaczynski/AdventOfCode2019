@@ -56,24 +56,30 @@ public abstract class AdventDay5 {
 
         int pos = position;
 
-        if (params[4] == 1) {
-            int a = 0;
-            int b = 0;
-            pos = position + 4;
+        int a = 0;
+        int b = 0;
 
+        if (position < calculatedCodes.size() - 1) {
             if (params[2] == 0) a = calculatedCodes.get(calculatedCodes.get(position + 1));
             else if (params[2] == 1) a = calculatedCodes.get(position + 1);
             else {
                 System.out.println("Error: Param 1 = " + params[2]);
                 System.exit(0);
             }
+        }
 
+        if (position < calculatedCodes.size() - 2) {
             if (params[1] == 0) b = calculatedCodes.get(calculatedCodes.get(position + 2));
             else if (params[1] == 1) b = calculatedCodes.get(position + 2);
             else {
                 System.out.println("Error: Param 2 = " + params[1]);
                 System.exit(0);
             }
+        }
+
+        if (params[4] == 1) {
+            pos = position + 4;
+
 
             if (params[0] == 0) calculatedCodes.set(calculatedCodes.get(position + 3), a + b);
             else {
@@ -81,23 +87,7 @@ public abstract class AdventDay5 {
             }
         }
         else if (params[4] == 2) {
-            int a = 0;
-            int b = 0;
             pos = position + 4;
-
-            if (params[2] == 0) a = calculatedCodes.get(calculatedCodes.get(position + 1));
-            else if (params[2] == 1) a = calculatedCodes.get(position + 1);
-            else {
-                System.out.println("Error: Param 1 = " + params[2]);
-                System.exit(0);
-            }
-
-            if (params[1] == 0) b = calculatedCodes.get(calculatedCodes.get(position + 2));
-            else if (params[1] == 1) b = calculatedCodes.get(position + 2);
-            else {
-                System.out.println("Error: Param 2 = " + params[1]);
-                System.exit(0);
-            }
 
             if (params[0] == 0) calculatedCodes.set(calculatedCodes.get(position + 3), a * b);
             else {
@@ -110,6 +100,9 @@ public abstract class AdventDay5 {
         }
         else if (params[4] == 4) {
             pos = position + 2;
+            System.out.println(a);
+            outputCodes.add(a);
+            /**
             if (params[2] == 0) {
                 System.out.println(calculatedCodes.get(calculatedCodes.get(position + 1)));
                 outputCodes.add(calculatedCodes.get(calculatedCodes.get(position + 1)));
@@ -120,68 +113,21 @@ public abstract class AdventDay5 {
             }
             else System.out.println("Error Param 1 = " + params[2]);
 
+             */
         }
         else if (params[4] == 5) {
-            int a = 0;
-            int b = 0;
-
-            if (params[2] == 0) a = calculatedCodes.get(calculatedCodes.get(position + 1));
-            else if (params[2] == 1) a = calculatedCodes.get(position + 1);
-            else {
-                System.out.println("Error: Param 1 = " + params[2]);
-                System.exit(0);
-            }
-
-            if (params[1] == 0) b = calculatedCodes.get(calculatedCodes.get(position + 2));
-            else if (params[1] == 1) b = calculatedCodes.get(position + 2);
-            else {
-                System.out.println("Error: Param 2 = " + params[1]);
-                System.exit(0);
-            }
 
             if (a != 0) pos = b;
             else pos = position + 3;
 
         }
         else if (params[4] == 6) {
-            int a = 0;
-            int b = 0;
-
-            if (params[2] == 0) a = calculatedCodes.get(calculatedCodes.get(position + 1));
-            else if (params[2] == 1) a = calculatedCodes.get(position + 1);
-            else {
-                System.out.println("Error: Param 1 = " + params[2]);
-                System.exit(0);
-            }
-
-            if (params[1] == 0) b = calculatedCodes.get(calculatedCodes.get(position + 2));
-            else if (params[1] == 1) b = calculatedCodes.get(position + 2);
-            else {
-                System.out.println("Error: Param 2 = " + params[1]);
-                System.exit(0);
-            }
 
             if (a == 0) pos = b;
             else pos = position + 3;
         }
         else if (params[4] == 7) {
-            int a = 0;
-            int b = 0;
             pos = position + 4;
-
-            if (params[2] == 0) a = calculatedCodes.get(calculatedCodes.get(position + 1));
-            else if (params[2] == 1) a = calculatedCodes.get(position + 1);
-            else {
-                System.out.println("Error: Param 1 = " + params[2]);
-                System.exit(0);
-            }
-
-            if (params[1] == 0) b = calculatedCodes.get(calculatedCodes.get(position + 2));
-            else if (params[1] == 1) b = calculatedCodes.get(position + 2);
-            else {
-                System.out.println("Error: Param 2 = " + params[1]);
-                System.exit(0);
-            }
 
             int result = 0;
             if (a < b) result = 1;
@@ -192,23 +138,7 @@ public abstract class AdventDay5 {
             }
         }
         else if (params[4] == 8) {
-            int a = 0;
-            int b = 0;
             pos = position + 4;
-
-            if (params[2] == 0) a = calculatedCodes.get(calculatedCodes.get(position + 1));
-            else if (params[2] == 1) a = calculatedCodes.get(position + 1);
-            else {
-                System.out.println("Error: Param 1 = " + params[2]);
-                System.exit(0);
-            }
-
-            if (params[1] == 0) b = calculatedCodes.get(calculatedCodes.get(position + 2));
-            else if (params[1] == 1) b = calculatedCodes.get(position + 2);
-            else {
-                System.out.println("Error: Param 2 = " + params[1]);
-                System.exit(0);
-            }
 
             int result = 0;
             if (a == b) result = 1;
@@ -223,7 +153,8 @@ public abstract class AdventDay5 {
             System.exit(0);
         }
         else {
-
+            System.out.println("Unknown code, exiting program...");
+            System.exit(0);
         }
         return pos;
     }
