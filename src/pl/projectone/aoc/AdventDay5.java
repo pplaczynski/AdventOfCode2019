@@ -13,7 +13,7 @@ public abstract class AdventDay5 {
     private static ArrayList<Integer> outputCodes = new ArrayList<>();
 
 
-    public static void calculateAoC5(String file) {
+    public static void calculateAoC5(String file, int input) {
 
         readDirections(file);
         System.out.println(calculatedCodes.size());
@@ -21,7 +21,7 @@ public abstract class AdventDay5 {
         while (position < calculatedCodes.size()) {
             System.out.println("Position: " + position + " instr: " + calculatedCodes.get(position));
             int[] params = interpreter(calculatedCodes.get(position));
-            position = runInstruction(params, position, 1);
+            position = runInstruction(params, position, input);
         }
 
     }
@@ -119,6 +119,103 @@ public abstract class AdventDay5 {
                 outputCodes.add(calculatedCodes.get(position + 1));
             }
             else System.out.println("Error Param 1 = " + params[2]);
+
+        }
+        else if (params[4] == 5) {
+            int a = 0;
+            int b = 0;
+
+            if (params[2] == 0) a = calculatedCodes.get(calculatedCodes.get(position + 1));
+            else if (params[2] == 1) a = calculatedCodes.get(position + 1);
+            else {
+                System.out.println("Error: Param 1 = " + params[2]);
+                System.exit(0);
+            }
+
+            if (params[1] == 0) b = calculatedCodes.get(calculatedCodes.get(position + 2));
+            else if (params[1] == 1) b = calculatedCodes.get(position + 2);
+            else {
+                System.out.println("Error: Param 2 = " + params[1]);
+                System.exit(0);
+            }
+
+            if (a != 0) pos = b;
+            else pos = position + 3;
+
+        }
+        else if (params[4] == 6) {
+            int a = 0;
+            int b = 0;
+
+            if (params[2] == 0) a = calculatedCodes.get(calculatedCodes.get(position + 1));
+            else if (params[2] == 1) a = calculatedCodes.get(position + 1);
+            else {
+                System.out.println("Error: Param 1 = " + params[2]);
+                System.exit(0);
+            }
+
+            if (params[1] == 0) b = calculatedCodes.get(calculatedCodes.get(position + 2));
+            else if (params[1] == 1) b = calculatedCodes.get(position + 2);
+            else {
+                System.out.println("Error: Param 2 = " + params[1]);
+                System.exit(0);
+            }
+
+            if (a == 0) pos = b;
+            else pos = position + 3;
+        }
+        else if (params[4] == 7) {
+            int a = 0;
+            int b = 0;
+            pos = position + 4;
+
+            if (params[2] == 0) a = calculatedCodes.get(calculatedCodes.get(position + 1));
+            else if (params[2] == 1) a = calculatedCodes.get(position + 1);
+            else {
+                System.out.println("Error: Param 1 = " + params[2]);
+                System.exit(0);
+            }
+
+            if (params[1] == 0) b = calculatedCodes.get(calculatedCodes.get(position + 2));
+            else if (params[1] == 1) b = calculatedCodes.get(position + 2);
+            else {
+                System.out.println("Error: Param 2 = " + params[1]);
+                System.exit(0);
+            }
+
+            int result = 0;
+            if (a < b) result = 1;
+
+            if (params[0] == 0) calculatedCodes.set(calculatedCodes.get(position + 3), result);
+            else {
+                System.out.println("Error: Param 1 = " + params[0]);
+            }
+        }
+        else if (params[4] == 8) {
+            int a = 0;
+            int b = 0;
+            pos = position + 4;
+
+            if (params[2] == 0) a = calculatedCodes.get(calculatedCodes.get(position + 1));
+            else if (params[2] == 1) a = calculatedCodes.get(position + 1);
+            else {
+                System.out.println("Error: Param 1 = " + params[2]);
+                System.exit(0);
+            }
+
+            if (params[1] == 0) b = calculatedCodes.get(calculatedCodes.get(position + 2));
+            else if (params[1] == 1) b = calculatedCodes.get(position + 2);
+            else {
+                System.out.println("Error: Param 2 = " + params[1]);
+                System.exit(0);
+            }
+
+            int result = 0;
+            if (a == b) result = 1;
+            if (params[0] == 0) calculatedCodes.set(calculatedCodes.get(position + 3), result);
+            else {
+                System.out.println("Error: Param 1 = " + params[0]);
+            }
 
         }
         else if ((params[4] == 9) && (params[3] == 9)) {
