@@ -46,16 +46,24 @@ public abstract class AdventDay4 {
 
                                 if ((valueInt > max) || (valueInt < min) ) continue;
 
-                                boolean doubles = false;
+                                int repeatNo = 1;
+                                int tempRep = 1;
+                                int d = 0;
                                 for (int z = 0; z < combValue.length()-1; z++) {
                                     if (combValue.substring(z, z+1).equals(combValue.substring(z+1, z+2))) {
-                                        doubles = true;
-                                        break;
+                                        tempRep += 1;
+                                        if (tempRep > repeatNo) repeatNo = tempRep;
+                                        if (z == 4 && tempRep == 2) d += 1;
+                                    }
+                                    else {
+                                        if (tempRep == 2) d += 1;
+
+                                        tempRep = 1;
                                     }
                                 }
+                                System.out.println(combValue + " repeats: " + repeatNo + " d" + d);
 
-
-                                if (doubles) {
+                                if (d > 0) {
                                     comb.add(valueInt);
                                     System.out.println(combValue + " - " + comb.size());
                                 }
