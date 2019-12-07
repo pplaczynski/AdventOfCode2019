@@ -38,8 +38,6 @@ public abstract class AdventDay6 {
     }
 
     private static void listPlanets() {
-        int totalIndirects = 0;
-        int totalDirects = 0;
         planetMap.forEach((k, v) -> System.out.println(v.toString()));
     }
 
@@ -111,7 +109,6 @@ public abstract class AdventDay6 {
         boolean end = false;
         String position = "YOU";
         String planet;
-        //youPath.add(position);
 
         while (!end) {
             planet = planetMap.get(position).getParent();
@@ -126,7 +123,6 @@ public abstract class AdventDay6 {
 
         end = false;
         position = "SAN";
-        //sanPath.add(position);
 
         while (!end) {
             planet = planetMap.get(position).getParent();
