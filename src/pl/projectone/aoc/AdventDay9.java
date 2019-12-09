@@ -78,16 +78,22 @@ public abstract class AdventDay9 {
             if (params[2] == 2) a2 = calculatedCodes.get((int) a1 + baseRef);
         }
 
-        if (position < calculatedCodes.size() - 3) {
-            b1 = calculatedCodes.get(position+2);
-            if (params[1] == 0) b0 = calculatedCodes.get((int) b1);
-            if (params[1] == 2) b2 = calculatedCodes.get((int) b1 + baseRef);
+        if (params[4] != 3 && params[4] != 4 && params[4] != 9) {
+            if (position < calculatedCodes.size() - 3) {
+                b1 = calculatedCodes.get(position+2);
+                if (params[1] == 0) b0 = calculatedCodes.get((int) b1);
+                if (params[1] == 2) b2 = calculatedCodes.get((int) b1 + baseRef);
+            }
+            if (params[4] != 5 && params[4] != 6) {
+                if (position < calculatedCodes.size() - 4) {
+                    c1 = calculatedCodes.get(position+3);
+                    if (params[0] == 0) c0 = calculatedCodes.get((int) c1);
+                    if (params[0] == 2) c2 = calculatedCodes.get((int) c1 + baseRef);
+                }
+            }
         }
-        if (position < calculatedCodes.size() - 4) {
-            c1 = calculatedCodes.get(position+3);
-            if (params[0] == 0) c0 = calculatedCodes.get((int) c1);
-            if (params[0] == 2) c2 = calculatedCodes.get((int) c1 + baseRef);
-        }
+
+
         if (params[0] > 2) {
             System.out.println("Error, param 0 = " + params[0]);
             System.exit(0);
