@@ -17,9 +17,9 @@ public abstract class AdventDay10 {
     private static int xSize;
     private static int ySize;
 
-    public static void calculateAoC10() {
+    public static void calculateAoC10(String file) {
 
-        readDirections("./inputs/day10/input1.txt");
+        readDirections(file);
         calculateRadials();
         Radials best = radials.stream().max((r1, r2) -> r1.visible - r2.visible).get();
         System.out.println(best.xCoor + "," + best.yCoor + " - visible - " + best.visible);

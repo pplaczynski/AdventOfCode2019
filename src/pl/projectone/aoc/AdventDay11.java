@@ -18,9 +18,9 @@ public abstract class AdventDay11 {
     private static BlockingQueue<Integer> comp = new ArrayBlockingQueue<Integer>(1000);
     private static ArrayList<Long> initialCodes = new ArrayList<>();
 
-    public static void calculateAoC11() {
+    public static void calculateAoC11(String file) {
 
-        initialCodes = readDirections("./inputs/day11/input1.txt");
+        initialCodes = readDirections(file);
         for (int i = 0; i < 1000000; i++) {
             initialCodes.add((long) 0);
         }
