@@ -4,21 +4,34 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toSet;
 
 public abstract class AdventDay10 {
 
     private static String[][] mainMap;
     private static ArrayList<Asteroid> asteroids = new ArrayList<>();
+    private static ArrayList<Radials> radials = new ArrayList<>();
     private static int xSize;
     private static int ySize;
 
     public static void calculateAoC10() {
 
-        readDirections("./inputs/day10/input1.txt");
+        readDirections("./inputs/day10/input2.txt");
         //printMap(mainMap);
         createAsteroids();
         //listAsteroids();
         //System.out.println("(" + asteroids.get(0).getX() + "," + asteroids.get(0).getY() + ")");
+        calculateRadials();
+        Radials best = radials.stream().max((r1, r2) -> r1.visible - r2.visible).get();
+        System.out.println(best.xCoor + "," + best.yCoor + " - visible - " + best.visible);
+        radials.sort((r1, r2) -> r1.visible - r2.visible);
+        System.out.println(radials.get(0).xCoor + "," + radials.get(0).yCoor + " - visible - " + radials.get(0).visible);
+        for (int x = 0; x < radials.size(); x++) System.out.println(radials.get(x).xCoor + "," + radials.get(x).yCoor + " - visible - " + radials.get(x).visible);
+        System.out.println("-------------------------------------------------------");
+
 
         for (int i = 0; i < asteroids.size(); i++) {
             asteroids.get(i).calcClosest();
@@ -42,11 +55,63 @@ public abstract class AdventDay10 {
         //printMap(mainMap);
 
         System.out.println("-----------------------------");
-        Radials r = new Radials(19,14);
+
+
+        //Radials r = new Radials(asteroids.get(0).getX(),asteroids.get(0).getY());
+        Radials r = new Radials(0,1);
         r.countSin();
         //printMap(r.getNewMap());
         r.orderThem();
 
+        System.out.println(r.getAstr().stream().filter(x -> x.getOrder() == 1).count());
+
+        printMap(r.createMap());
+
+        int maxOrder = r.getAstr().stream().max((a1, a2) -> a1.getOrder() - a2.getOrder()).get().getOrder();
+
+        Map<Integer, Set<Astr>> temp = r.getAstr().stream().collect(groupingBy(Astr::getOrder, toSet()));
+        int shoot = 0;
+        for (int i = 0; i < temp.size(); i++) {
+            System.out.println(i + ":");
+            var set = temp.get(i);
+            ArrayList<Astr> temp2 = new ArrayList<>();
+            set.forEach(s -> temp2.add(s));
+            temp2.sort((s1, s2) -> Float.compare(s1.getRad(), s2.getRad()));
+            for (int v = 0; v < temp2.size(); v++) {
+                temp2.get(v).shotValue = shoot;
+                if (shoot == 200) System.out.println(temp2.get(v).getX() + "," + temp2.get(v).getY() + " --------------------");
+                shoot++;
+            }
+        }
+
+        for (int i = 0; i < r.astr.size(); i++) {
+            var a = r.astr.get(i);
+            System.out.println("(" + a.x + "," + a.y + ") - " + a.shotValue);
+        }
+
+
+        for (int z = 0; z < xSize; z++) {
+            for (int z2 = 0; z2 < ySize; z2++) {
+                if (!asteroids.get(0).myMap[z][z2].equals(r.finalMap[z][z2])) System.out.println("not ok " + z + "," + z2 + " ---------------------");
+            }
+        }
+
+
+    }
+
+    private static void calculateRadials() {
+
+        for (int i = 0; i < xSize; i++) {
+            for (int j = 0; j < ySize; j++) {
+                if (mainMap[i][j].equals("#")) {
+                    Radials r = new Radials(i,j);
+                    r.countSin();
+                    r.orderThem();
+                    r.visible = (int) r.getAstr().stream().filter(x -> x.getOrder() == 1).count();
+                    radials.add(r);
+                }
+            }
+        }
     }
 
     private static void listAsteroids() {
@@ -287,11 +352,13 @@ public abstract class AdventDay10 {
 
     private static class Radials {
 
-        private String[][] newMap = new String[xSize][ySize];
-        private Float[][] floatMap = new Float[xSize][ySize];
-        private int xCoor;
-        private int yCoor;
-        private ArrayList<Astr> astr = new ArrayList<>();
+        public String[][] newMap = new String[xSize][ySize];
+        public Float[][] floatMap = new Float[xSize][ySize];
+        public String[][] finalMap = new String[xSize][ySize];
+        public int xCoor;
+        public int yCoor;
+        public ArrayList<Astr> astr = new ArrayList<>();
+        public int visible = 0;
 
         public Radials(int xCoor, int yCoor) {
             this.xCoor = xCoor;
@@ -316,8 +383,9 @@ public abstract class AdventDay10 {
 
                         angle = (float) Math.toDegrees(Math.atan2(y - yCoor, x - xCoor));
                         distance = Math.abs(x - xCoor) + Math.abs(y - yCoor);
-                        if (angle < -90) angle = Math.abs(angle) + 180;
-                        if (angle < 0 && angle >= -90) angle += +90;
+                        if (angle >= 0) angle += 90;
+                        if (angle < 0) angle += 450;
+                        if (angle >= 360) angle -= 360;
 
                         newMap[x][y] = Float.toString(angle);
                         floatMap[x][y] = angle;
@@ -330,8 +398,27 @@ public abstract class AdventDay10 {
             //for (Astr a : astr) System.out.println("(" + a.getX() + "," + a.getY() + ") - angle: " + a.getRad());
         }
 
-        public String[][] getNewMap() {
-            return newMap;
+        public String[][] createMap() {
+
+            String symbol = ".";
+            for (int x = 0; x < xSize; x++) {
+                for (int y = 0; y < ySize; y++) {
+                    finalMap[x][y] = symbol;
+                }
+            }
+            for (int i = 0; i < astr.size(); i++) {
+                var a = astr.get(i);
+                if (a.getDistance() == 0) {
+                    finalMap[a.getX()][a.getY()] = "@";
+                }
+                else if (a.getOrder() == 1) finalMap[a.getX()][a.getY()] = "#";
+                else finalMap[a.getX()][a.getY()] = "o";
+            }
+            return finalMap;
+        }
+
+        public ArrayList<Astr> getAstr() {
+            return astr;
         }
 
         public void orderThem() {
@@ -349,17 +436,28 @@ public abstract class AdventDay10 {
                     if (astr.get(z).getRad() == r) {
                         temp.add(astr.get(z));
                         w++;
-                        System.out.println(w);
+                        //System.out.println(w);
                     }
                 }
                 temp.sort((a, b) -> a.getDistance() - b.getDistance());
-                for (int g = 0; g < temp.size(); g++) temp.get(g).setOrder(g+1);
+                int order = 1;
+                for (int g = 0; g < temp.size(); g++) {
+                    if ((temp.get(g).getX() == xCoor) && (temp.get(g).getY() == yCoor)) {
+                        temp.get(g).setOrder(0);
+                        continue;
+                    }
+                    temp.get(g).setOrder(order);
+                    order++;
+                }
                 temp.clear();
+                order = 1;
                 i += w;
                 w = 0;
             }
-            for (Astr a : astr) System.out.println("(" + a.getX() + "," + a.getY() + ") - angle: " + a.getRad() + " or " + a.getOrder() + " dis " + a.getDistance());
+            //for (Astr a : astr) System.out.println("(" + a.getX() + "," + a.getY() + ") - angle: " + a.getRad() + " or " + a.getOrder() + " dis " + a.getDistance());
         }
+
+
     }
 
     private static class Astr {
@@ -369,6 +467,7 @@ public abstract class AdventDay10 {
         private float rad;
         private int order;
         private int distance;
+        public int shotValue = 0;
 
         public Astr(int x, int y, float rad, int distance) {
             this.x = x;
