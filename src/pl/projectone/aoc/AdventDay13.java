@@ -1,6 +1,5 @@
 package pl.projectone.aoc;
 
-import java.awt.*;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.nio.charset.StandardCharsets;
@@ -39,7 +38,6 @@ public abstract class AdventDay13 {
         try {
             compFuture = service.take();
             System.out.println(" Comp exit code " + compFuture.get());
-            //System.out.println(robot.size());
             roboFuture = service.take();
             System.out.println(" Robot exit code - blocks " + roboFuture.get());
 
