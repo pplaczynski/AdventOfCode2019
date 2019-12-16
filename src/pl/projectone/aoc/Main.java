@@ -19,6 +19,7 @@ public class Main {
         //AdventDay12.calculateAoC12();
         //AdventDay13.calculateAoC13("./inputs/day13/input1.txt");
         //AdventDay14.calculateAoC14();
-        AdventDay15.calculateAoC15();
+        //AdventDay15.calculateAoC15();
+        AdventDay16.calculateAoc16();
     }
 }
