@@ -21,6 +21,7 @@ public class Main {
         //AdventDay14.calculateAoC14();
         //AdventDay15.calculateAoC15();
         //AdventDay16.calculateAoc16();
-        AdventDay17.calculateAoC17();
+        //AdventDay17.calculateAoC17();
+        AdventDay18.calculateAoC18();
     }
 }
