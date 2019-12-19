@@ -1,78 +1,77 @@
 package pl.projectone.aoc;
 
+import java.awt.*;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.concurrent.ExecutorService;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.TreeMap;
 
 public class MRunner {
 
-    String[][] map; // my own copy of map
-    ArrayList<String> order = new ArrayList<>(); // order of keys and opened doors
-    HashSet<String> keys = new HashSet<>();
-    int steps; // steps taken
+    ArrayList<String> keys = new ArrayList<>(); // order of keys and opened doors
+    HashMap<String, Integer> k = new HashMap<>();
+    TreeMap<Integer, String> tm = new TreeMap<>();
+    ArrayList<String> doors = new ArrayList<>();
+    int steps = 0; // steps taken
     int currX;
     int currY;
-    int all;
     int dir;
-    int xSize;
-    int ySize;
-    int currentMin = 10000000;
+    int local;
+    int initial = 0;
+    String[][] map;
+    String name;
+    private static HashMap<String, Point> coors;
+    ArrayList<Integer> results;
+    int mode;
 
-    public MRunner(String[][] m, int mX, int mY, int steps,
-                        ArrayList<String> o, int currX, int currY,
-                        int all, int dir, HashSet<String> k, int min) {
-
-        currentMin = min;
-        map = new String[mY][mX];
-        for (int y = 0; y < mY; y++) {
-            for (int x = 0; x < mX; x++) {
-                map[y][x] = m[y][x];
-            }
-        }
-        for (int i = 0; i < o.size(); i++) order.add(o.get(i));
-        k.forEach(v -> keys.add(v));
-
+    public MRunner(String[][] map, int steps, ArrayList<String> keys, int currX, int currY, int dir, int local, HashMap<String, Point> coors, ArrayList<Integer> r, int mode) {
+        this.mode = mode;
+        results = r;
+        this.coors = coors;
+        this.local = local;
+        this.map = map;
+        this.keys.addAll(keys);
         this.steps = steps;
+        this.initial = steps;
         this.currX = currX;
         this.currY = currY;
-        this.all = all;
+        name = map[currY][currX];
         this.dir = dir; // 1 up, 2 down, 3 right, 4 left
-        xSize = mX;
-        ySize = mY;
+
     }
 
-    public int runner() {
+    public TreeMap<Integer, String> runner() {
+
+        //System.out.println("Starting at: " + currX + "," + currY + " name " + map[currY][currX] + " keys " + keys.size());
 
         Boolean[] dirs = {false, false, false, false};
         boolean end = false;
         int moves = 0;
         int oldX;
         int oldY;
+        boolean found = false;
 
         while(!end) {
 
-            if (steps > currentMin) {
-                end = true;
-                break;
-            }
-
-            if ((!map[currY][currX].equals("#")) && (!map[currY][currX].equals("."))) {
-                order.add(map[currY][currX]);
-                if (order.size() == all) {
-                    System.out.println(Thread.currentThread().getId() + "Found everything after - " + steps + " steps ---------------- !!!!!!!!");
-                    if (currentMin > steps) currentMin = steps;
-                    //System.out.println(order.toString());
+            //System.out.println("Currently at " + currX + "," + currY);
+            if (Character.isLowerCase(map[currY][currX].charAt(0))) {
+                if (keys.size() == coors.size()) {
+                    System.out.println("Found everything after " + steps + " steps" + keys.toString() +" k " + keys.size() + " c " + coors.size());
+                    results.add(steps);
+                    found = true;
                     end = true;
                     break;
                 }
-                if (Character.isLowerCase(map[currY][currX].charAt(0))) keys.add(map[currY][currX]);
-                map[currY][currX] = ".";
-                dir = 0; // after taking the key you can backtrack;
+                if ((local > 0) && !keys.contains(map[currY][currX])) {
+                    //k.put(map[currY][currX], local); // put found steps and local steps;
+                    tm.put(local, map[currY][currX]);
+                }
             }
+
 
             if (!map[currY-1][currX].equals("#")) {
                 if (dir != 2) {
-                    if (map[currY-1][currX].equals(".") || Character.isLowerCase(map[currY-1][currX].charAt(0))) {
+                    if (map[currY-1][currX].equals(".") || Character.isLowerCase(map[currY-1][currX].charAt(0)) || map[currY-1][currX].equals("@")) {
                         moves++;
                         dirs[0] = true;
                     }
@@ -85,7 +84,7 @@ public class MRunner {
 
             if (!map[currY+1][currX].equals("#")) {
                 if (dir != 1) {
-                    if (map[currY+1][currX].equals(".") || Character.isLowerCase(map[currY+1][currX].charAt(0))) {
+                    if (map[currY+1][currX].equals(".") || Character.isLowerCase(map[currY+1][currX].charAt(0)) || map[currY+1][currX].equals("@")) {
                         moves++;
                         dirs[1] = true;
                     }
@@ -97,40 +96,33 @@ public class MRunner {
             }
 
             if (!map[currY][currX-1].equals("#")) {
-                //System.out.println(Thread.currentThread().getId() + "  " + currX + "," + currY + "checking left - " + map[currY][currX-1]);
                 if (dir != 4) {
-                    if (map[currY][currX-1].equals(".") || Character.isLowerCase(map[currY][currX-1].charAt(0))) {
+                    //System.out.println("Checking " + map[currY][currX-1] + " keys " + keys.toString());
+                    if (map[currY][currX-1].equals(".") || Character.isLowerCase(map[currY][currX-1].charAt(0)) || map[currY][currX-1].equals("@")) {
                         moves++;
                         dirs[2] = true;
                     }
                     else if (keys.contains(map[currY][currX-1].toLowerCase())) {
-                        //System.out.println(Thread.currentThread().getId() + "trying to open: " + map[currY][currX-1]);
                         moves++;
                         dirs[2] = true;
                     }
-                    //else System.out.println(Thread.currentThread().getId() + " no path");
                 }
             }
 
             if (!map[currY][currX+1].equals("#")) {
-                //System.out.println(Thread.currentThread().getId() + "  " + currX + "," + currY + "checking right - " + map[currY][currX+1]);
                 if (dir != 3) {
-                    if (map[currY][currX+1].equals(".") || Character.isLowerCase(map[currY][currX+1].charAt(0))) {
+                    if (map[currY][currX+1].equals(".") || Character.isLowerCase(map[currY][currX+1].charAt(0)) || map[currY][currX+1].equals("@")) {
                         moves++;
                         dirs[3] = true;
                     }
                     else if (keys.contains(map[currY][currX+1].toLowerCase())) {
-                        //System.out.println(Thread.currentThread().getId() + "trying to open: " + map[currY][currX+1]);
                         moves++;
                         dirs[3] = true;
                     }
-                    //else System.out.println(Thread.currentThread().getId() + " no path");
                 }
             }
 
             if (moves == 0) {
-                //System.out.println(Thread.currentThread().getId() + "Finished after - " + steps + " found: " + order.size() + " moves " + moves + " keys " + keys.toString());
-                //System.out.println(order.toString());
                 end = true;
                 break;
             }
@@ -143,56 +135,56 @@ public class MRunner {
                 if (runner == 0) {
                     currY -= 1; // move up
                     dir = 1; // current direction up
-                    steps += 1; // update steps
-                    runner += 1;
+                    steps++; // update steps
+                    local++;
+                    runner++;
                 }
                 else {
-                    MRunner r = new MRunner(map, xSize, ySize, steps, order, oldX, oldY-1, all, 1, keys, currentMin);
-                    int res = r.runner();
-                    if (res < currentMin) currentMin = res;
-                    //new Thread(new MazeRunner18(map, xSize, ySize, steps, order, oldX, oldY-1, all, 1, keys)).start();
+                    MRunner r = new MRunner(map, steps + 1, keys, oldX, oldY-1, 1, local, coors, results, 1);
+                    //k.putAll(r.runner());
+                    tm.putAll(r.runner());
                 }
             }
             if (dirs[1]) { // one possible move down
                 if (runner == 0) {
                     currY += 1; // move down
                     dir = 2; // current direction down
-                    steps += 1; // update steps
-                    runner += 1;
+                    steps++; // update steps
+                    local++;
+                    runner++;
                 }
                 else {
-                    MRunner r = new MRunner(map, xSize, ySize, steps, order, oldX, oldY+1, all, 2, keys, currentMin);
-                    int res = r.runner();
-                    if (res < currentMin) currentMin = res;
-                    //new Thread(new MazeRunner18(map, xSize, ySize, steps, order, oldX, oldY+1, all, 2, keys)).start();
+                    MRunner r = new MRunner(map, steps + 1, keys, oldX, oldY+1, 2, local, coors, results, 1);
+                    //k.putAll(r.runner());
+                    tm.putAll(r.runner());
                 }
             }
             if (dirs[2]) { // one possible move left
                 if (runner == 0) {
                     currX -= 1; // move left
                     dir = 3; // current direction left
-                    steps += 1; // update steps
-                    runner += 1;
+                    steps++; // update steps
+                    local++;
+                    runner++;
                 }
                 else {
-                    MRunner r = new MRunner(map, xSize, ySize, steps, order, oldX-1, oldY, all, 3, keys, currentMin);
-                    int res = r.runner();
-                    if (res < currentMin) currentMin = res;
-                    //new Thread(new MazeRunner18(map, xSize, ySize, steps, order, oldX-1, oldY, all, 3, keys)).start();
+                    MRunner r = new MRunner(map, steps + 1, keys, oldX-1, oldY, 3, local, coors, results, 1);
+                    //k.putAll(r.runner());
+                    tm.putAll(r.runner());
                 }
             }
             if (dirs[3]) { // one possible move right
                 if (runner == 0) {
                     currX += 1; // move right
                     dir = 4; // current direction right
-                    steps += 1; // update steps
-                    runner += 1;
+                    steps++; // update steps
+                    local++;
+                    runner++;
                 }
                 else {
-                    MRunner r = new MRunner(map, xSize, ySize, steps, order, oldX+1, oldY, all, 4, keys, currentMin);
-                    int res = r.runner();
-                    if (res < currentMin) currentMin = res;
-                    //new Thread(new MazeRunner18(map, xSize, ySize, steps, order, oldX+1, oldY, all, 4, keys)).start();
+                    MRunner r = new MRunner(map, steps + 1, keys, oldX+1, oldY, 4, local, coors, results, 1);
+                    //k.putAll(r.runner());
+                    tm.putAll(r.runner());
                 }
             }
 
@@ -202,6 +194,87 @@ public class MRunner {
             dirs[3] = false;
             moves = 0;
         }
-        return currentMin;
+
+        //System.out.println("Finalized search from key " + name);
+
+
+        /**
+        if (!found && (k.size() > 0) && (mode == 0)) {
+            String a = k.entrySet().stream().min((v1, v2) -> Integer.compare(v1.getValue(), v2.getValue())).get().getKey();
+            int v = k.entrySet().stream().min((v1, v2) -> Integer.compare(v1.getValue(), v2.getValue())).get().getValue();
+            System.out.println("Jumping to " + a + " with value " + v + " from " + name);
+            ArrayList<String> temp = new ArrayList<>();
+            temp.addAll(keys);
+            temp.add(a);
+            //System.out.println("Starting search from " + k + " with keys " + keys.toString() + " final keys " + temp.toString());
+            MRunner r = new MRunner(map, v + initial, temp, coors.get(a).x, coors.get(a).y, 0, 0, coors, results, 0);
+            r.runner();
+        }
+         */
+
+
+        /**
+        if (!found && (mode == 0)) {
+            k.forEach((k, v) -> {
+
+                if (results.size() > 0) {
+                    Collections.sort(results);
+                    if (v + initial < results.get(0)) {
+                        ArrayList<String> temp = new ArrayList<>();
+                        temp.addAll(keys);
+                        temp.add(k);
+                        //System.out.println("Jumping to " + k + " with value " + v + " from " + name);
+                        //System.out.println("Starting search from " + k + " with keys " + keys.toString() + " final keys " + temp.toString());
+                        MRunner r = new MRunner(map, v + initial, temp, coors.get(k).x, coors.get(k).y, 0, 0, coors, results, 0);
+                        r.runner();
+                    }
+                }
+                else {
+                    ArrayList<String> temp = new ArrayList<>();
+                    temp.addAll(keys);
+                    temp.add(k);
+                    //System.out.println("Jumping to " + k + " with value " + v + " from " + name);
+                    //System.out.println("Starting search from " + k + " with keys " + keys.toString() + " final keys " + temp.toString());
+                    MRunner r = new MRunner(map, v + initial, temp, coors.get(k).x, coors.get(k).y, 0, 0, coors, results, 0);
+                    r.runner();
+                }
+
+            });
+        }
+        */
+
+        /**
+        if (!found && (mode == 0)) {
+
+            tm.forEach((v, k) -> {
+
+                if (results.size() > 0) {
+                    Collections.sort(results);
+                    if (v + initial < results.get(0)) {
+                        ArrayList<String> temp = new ArrayList<>();
+                        temp.addAll(keys);
+                        temp.add(k);
+                        //System.out.println("Jumping to " + k + " with value " + v + " from " + name);
+                        //System.out.println("Starting search from " + k + " with keys " + keys.toString() + " final keys " + temp.toString());
+                        MRunner r = new MRunner(map, v + initial, temp, coors.get(k).x, coors.get(k).y, 0, 0, coors, results, 0);
+                        r.runner();
+                    }
+                }
+                else {
+                    ArrayList<String> temp = new ArrayList<>();
+                    temp.addAll(keys);
+                    temp.add(k);
+                    //System.out.println("Jumping to " + k + " with value " + v + " from " + name);
+                    //System.out.println("Starting search from " + k + " with keys " + keys.toString() + " final keys " + temp.toString());
+                    MRunner r = new MRunner(map, v + initial, temp, coors.get(k).x, coors.get(k).y, 0, 0, coors, results, 0);
+                    r.runner();
+                }
+
+            });
+        }
+         */
+
+
+        return tm;
     }
 }

@@ -15,14 +15,24 @@ public abstract class AdventDay18 {
 
     private static int ySize = 0;
     private static int xSize = 0;
+    private static int yStart = 0;
+    private static int xStart = 0;
     private static String[][] map;
     private static HashMap<String, Point> keysDoors = new HashMap<>();
     private static ArrayList<No> nodes = new ArrayList<>();
+    private static ArrayList<Integer> results = new ArrayList<>();
 
     public static void calculateAoC18() {
 
         readDirections("./inputs/day18/input1.txt");
         printMap();
+        System.out.println("all keys: " + keysDoors.size());
+
+        MRunner r = new MRunner(map, 0, new ArrayList<>(), xStart, yStart, 0, 0, keysDoors, results, 0);
+        TreeMap<Integer, String> nmap = r.runner();
+        Collections.sort(results);
+        System.out.println("Results: " + results.get(0));
+        nmap.forEach((k, v) -> System.out.println(v + " steps away " + k));
 
         /**
         keysDoors.forEach((k, v) -> System.out.println(k + " at [" + v.x + "," + v.y + "]"));
@@ -38,7 +48,6 @@ public abstract class AdventDay18 {
         pool.execute(runner);
         MRunner r = new MRunner(map, xSize, ySize, 0, new ArrayList<>(), keysDoors.get("@").x, keysDoors.get("@").y, keysDoors.size(), 0, new HashSet<String>(), 1000000);
         //r.runner();
-         */
         System.out.println("------------------------------------");
         findNodes();
         printMap();
@@ -55,14 +64,12 @@ public abstract class AdventDay18 {
         boolean optimized = false;
         int initial = nodes.size();
 
-        /**
         while(!optimized) {
             System.out.println(" Nodes size: " + nodes.size());
             limitNodes();
             if (nodes.size() < initial) initial = nodes.size();
             else optimized = true;
         }
-         */
 
         System.out.println(" Nodes size: " + nodes.size());
         limitNodes();
@@ -88,7 +95,7 @@ public abstract class AdventDay18 {
         if (n.right != null) System.out.println("Right Node: " + n.right.x + "," + n.right.y);
         if (n.up != null) System.out.println("Up Node: " + n.up.x + "," + n.up.y);
         if (n.down != null) System.out.println("Down Node: " + n.down.x + "," + n.down.y);
-
+        */
 
     }
 
@@ -270,9 +277,14 @@ public abstract class AdventDay18 {
         for (int y = 0; y < ySize; y++) {
             for (int x = 0; x < xSize; x++) {
                 map[y][x] = lines.get(y).substring(x, x+1);
-                if ((!map[y][x].equals("#")) && (!map[y][x].equals("."))) {
-                    keysDoors.put(map[y][x], new Point(x, y));
+                if(Character.isLowerCase(map[y][x].charAt(0))) keysDoors.put(map[y][x], new Point(x, y));
+                if (map[y][x].equals("@")) {
+                    xStart = x;
+                    yStart = y;
                 }
+                //if ((!map[y][x].equals("#")) && (!map[y][x].equals("."))) {
+                //    keysDoors.put(map[y][x], new Point(x, y));
+                //}
             }
         }
         return map;
