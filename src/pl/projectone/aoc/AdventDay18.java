@@ -21,6 +21,8 @@ public abstract class AdventDay18 {
     private static HashMap<String, Point> keysDoors = new HashMap<>();
     private static ArrayList<No> nodes = new ArrayList<>();
     private static ArrayList<Integer> results = new ArrayList<>();
+    private static HashMap<String, ArrayList<Connection18>> nod = new HashMap<>();
+    private static ArrayList<String> myKeys = new ArrayList<>();
 
     public static void calculateAoC18() {
 
@@ -28,75 +30,64 @@ public abstract class AdventDay18 {
         printMap();
         System.out.println("all keys: " + keysDoors.size());
 
-        MRunner r = new MRunner(map, 0, new ArrayList<>(), xStart, yStart, 0, 0, keysDoors, results, 0);
-        TreeMap<Integer, String> nmap = r.runner();
-        Collections.sort(results);
-        System.out.println("Results: " + results.get(0));
-        nmap.forEach((k, v) -> System.out.println(v + " steps away " + k));
-
-        /**
-        keysDoors.forEach((k, v) -> System.out.println(k + " at [" + v.x + "," + v.y + "]"));
+        MRunner r = new MRunner(map, 0, new ArrayList<>(), xStart, yStart, 0, 0, keysDoors, results, 0, new ArrayList<String>());
+        nod.put("@", r.runner());
 
         keysDoors.forEach((k, v) -> {
-            if (Character.isLowerCase(k.charAt(0))) System.out.println(k + " is key");
+            MRunner ru = new MRunner(map, 0, new ArrayList<>(), v.x, v.y, 0, 0, keysDoors, results, 0, new ArrayList<String>());
+            nod.put(k, ru.runner());
         });
 
-        ExecutorService pool = Executors.newFixedThreadPool(5);
+        nod.forEach((k, v) -> {
+            System.out.println("Key " + k + " connections " + v.size());
 
-        MazeRunner18 runner = new MazeRunner18(map, xSize, ySize, 0, new ArrayList<>(), keysDoors.get("@").x, keysDoors.get("@").y, keysDoors.size(), 0, new HashSet<String>(), pool);
-        new Thread(runner).start();
-        pool.execute(runner);
-        MRunner r = new MRunner(map, xSize, ySize, 0, new ArrayList<>(), keysDoors.get("@").x, keysDoors.get("@").y, keysDoors.size(), 0, new HashSet<String>(), 1000000);
-        //r.runner();
-        System.out.println("------------------------------------");
-        findNodes();
-        printMap();
+        });
 
-        connect();
+        results.add(10000000);
+        calcDijk("@", new ArrayList<String>(), 0);
+        Collections.sort(results);
+        System.out.println("Best result " + results.get(0));
 
-        No n = nodes.get(1);
-        System.out.println("Main Node: " + n.x + "," + n.y);
-        if (n.left != null) System.out.println("Left Node: " + n.left.x + "," + n.left.y);
-        if (n.right != null) System.out.println("Right Node: " + n.right.x + "," + n.right.y);
-        if (n.up != null) System.out.println("Up Node: " + n.up.x + "," + n.up.y);
-        if (n.down != null) System.out.println("Down Node: " + n.down.x + "," + n.down.y);
 
-        boolean optimized = false;
-        int initial = nodes.size();
 
-        while(!optimized) {
-            System.out.println(" Nodes size: " + nodes.size());
-            limitNodes();
-            if (nodes.size() < initial) initial = nodes.size();
-            else optimized = true;
+    }
+
+    private static void calcDijk(String key, ArrayList<String> keys, int dist) {
+
+        int d = dist;
+        ArrayList<String> locK = new ArrayList<>();
+        locK.addAll(keys);
+        ArrayList<Connection18> cons = nod.get(key);
+        if (locK.size() == nod.size() - 1) {
+            System.out.println("Found all in " + d + " steps!");
+            results.add(d);
         }
 
-        System.out.println(" Nodes size: " + nodes.size());
-        limitNodes();
-        System.out.println(" Nodes size: " + nodes.size());
-        limitNodes();
-        System.out.println(" Nodes size: " + nodes.size());
-        limitNodes();
-        for (int i = 0; i < nodes.size(); i++) {
-            map[nodes.get(i).y][nodes.get(i).x] = nodes.get(i).name;
+        Collections.sort(results);
+        cons.sort((c1, c2) -> c1.distance - c2.distance);
+
+        for (int i = 0; i < cons.size(); i++) {
+            Connection18 c = cons.get(i);
+            if (!locK.contains(c.name)) {
+
+                if (results.get(0) > d + c.distance) {
+                    boolean pass = true;
+                    for (int l = 0; l < c.doors.size(); l++) {
+                        if (!locK.contains(c.doors.get(l).toLowerCase())) {
+                            pass = false;
+                            break;
+                        }
+                    }
+                    if (pass) {
+                        //System.out.println("Calculating for " + c.name + " keys gathered " + locK.toString());
+                        ArrayList<String> temp = new ArrayList<>();
+                        temp.addAll(locK);
+                        temp.add(c.name);
+                        calcDijk(c.name, temp, d + c.distance);
+                    }
+                }
+            }
         }
-        printMap();
-
-        n = nodes.get(1);
-        System.out.println("Main Node: " + n.x + "," + n.y);
-        if (n.left != null) System.out.println("Left Node: " + n.left.x + "," + n.left.y);
-        if (n.right != null) System.out.println("Right Node: " + n.right.x + "," + n.right.y);
-        if (n.up != null) System.out.println("Up Node: " + n.up.x + "," + n.up.y);
-        if (n.down != null) System.out.println("Down Node: " + n.down.x + "," + n.down.y);
-
-        n = nodes.get(0);
-        System.out.println("Main Node: " + n.x + "," + n.y);
-        if (n.left != null) System.out.println("Left Node: " + n.left.x + "," + n.left.y);
-        if (n.right != null) System.out.println("Right Node: " + n.right.x + "," + n.right.y);
-        if (n.up != null) System.out.println("Up Node: " + n.up.x + "," + n.up.y);
-        if (n.down != null) System.out.println("Down Node: " + n.down.x + "," + n.down.y);
-        */
-
     }
 
     private static class No {
